@@ -1,0 +1,36 @@
+name: 🚀 Deploy demo page
+concurrency: deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 📥 Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          repository: vason-io/vason-sheets
+          ref: master
+          token: ${{ secrets.VASON_SHEETS_READ_PAT }}
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: 🐘 Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 🏗️ Build demo website
+        run: ./gradlew -p sheets/core buildDemo --stacktrace
+
+      - name: 📤 Upload static files as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: sheets/core/dist/demo/
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
