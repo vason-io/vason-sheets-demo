@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-24.04
     steps:
       - name: 📥 Checkout the repository
@@ -28,9 +28,23 @@ jobs:
         run: ./gradlew -p sheets/core buildDemo --stacktrace
 
       - name: 📤 Upload static files as artifact
+        id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
           path: sheets/core/dist/demo/
 
+  deploy:
+    needs: build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    runs-on: ubuntu-24.04
+    steps:
       - name: 🚀 Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
