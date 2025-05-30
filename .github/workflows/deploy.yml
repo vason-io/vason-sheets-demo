@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: vason-io/vason-sheets
-          ref: master
+          ref: main
           token: ${{ secrets.VASON_SHEETS_READ_PAT }}
 
       - name: ☕ Setup Java
